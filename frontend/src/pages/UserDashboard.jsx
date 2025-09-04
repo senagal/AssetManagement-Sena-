@@ -11,34 +11,8 @@ export default function UserDashboard({ user, onLogout }) {
 
   const loadData = async () => {
     try {
-      // Replace these with your real API calls
-      const assetsData = [
-        {
-          id: 1,
-          name: "Laptop",
-          category: "Electronics",
-          serialNumber: "1234",
-          purchaseDate: "2023-01-10",
-          status: "Available",
-        },
-        {
-          id: 2,
-          name: "Projector",
-          category: "Electronics",
-          serialNumber: "5678",
-          purchaseDate: "2022-11-05",
-          status: "Available",
-        },
-      ];
-      const requestsData = [
-        {
-          id: 1,
-          assetName: "Laptop",
-          requestDate: "2023-08-01",
-          status: "Pending",
-          adminNotes: "Processing",
-        },
-      ];
+      const assetsData = [];
+      const requestsData = [];
       setAssets(assetsData.filter((asset) => asset.status === "Available"));
       setRequests(requestsData);
     } catch (error) {
@@ -50,13 +24,10 @@ export default function UserDashboard({ user, onLogout }) {
 
   const handleRequestAsset = (assetId) => {
     alert(`Request sent for asset ID: ${assetId}`);
-    // Implement your API request logic here
   };
 
   const getBadgeClass = (status) => {
     switch (status) {
-      case "Pending":
-        return "badge bg-warning text-dark";
       case "Approved":
         return "badge bg-success";
       case "Rejected":
@@ -76,7 +47,6 @@ export default function UserDashboard({ user, onLogout }) {
 
   return (
     <div className="container-fluid p-0">
-      {/* Header */}
       <nav className="navbar navbar-light bg-light border-bottom">
         <div className="container">
           <span className="navbar-brand mb-0 h1">Asset Management</span>
@@ -89,10 +59,8 @@ export default function UserDashboard({ user, onLogout }) {
         </div>
       </nav>
 
-      {/* Main */}
       <div className="container my-4">
         <div className="row">
-          {/* Available Assets */}
           <div className="col-lg-6 mb-4">
             <h4>Available Assets</h4>
             {assets.length === 0 && <p>No available assets at the moment.</p>}
@@ -126,7 +94,6 @@ export default function UserDashboard({ user, onLogout }) {
             ))}
           </div>
 
-          {/* My Requests */}
           <div className="col-lg-6 mb-4">
             <h4>My Requests</h4>
             {requests.length === 0 && <p>No requests yet.</p>}
