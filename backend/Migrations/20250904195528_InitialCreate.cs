@@ -58,7 +58,8 @@ namespace backend.Migrations
                     Status = table.Column<string>(type: "text", nullable: false),
                     RequestedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     HandledOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    HandledByAdminId = table.Column<int>(type: "integer", nullable: true)
+                    HandledByAdminId = table.Column<int>(type: "integer", nullable: true),
+                    Reason = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

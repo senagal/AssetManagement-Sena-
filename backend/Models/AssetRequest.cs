@@ -17,5 +17,7 @@ namespace AssetManagement.Models
 
         public int? HandledByAdminId { get; set; }
         public User? HandledByAdmin { get; set; }
+
+        public string? Reason { get; set; } 
     }
 }

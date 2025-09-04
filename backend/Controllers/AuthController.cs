@@ -42,11 +42,14 @@ public class AuthController : ControllerBase
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
-        return Ok(new { Token = tokenHandler.WriteToken(token) });
+return Ok(new
+{
+    token = tokenHandler.WriteToken(token),
+
+});
     }
 }
 
-// DTO for login
 public class LoginRequest
 {
     public string Email { get; set; } = string.Empty;
