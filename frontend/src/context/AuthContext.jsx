@@ -1,31 +1,30 @@
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authService } from "../lib/authService";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  const [token, setToken] = useState(
+    () => localStorage.getItem("token") || null
+  );
 
   const login = async (email, password) => {
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        const err = await res.text();
-        throw new Error(err || "Login failed");
-      }
-
-      const data = await res.json();
+      const data = await authService.login(email, password);
       setToken(data.token);
       localStorage.setItem("token", data.token);
 
-      navigate("/user-dashboard");
+      const userData = await authService.getProfile();
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      navigate("/dashboard");
     } catch (err) {
       alert(err.message);
     }
@@ -35,11 +34,12 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     localStorage.removeItem("token");
-    navigate("/login");
+    localStorage.removeItem("user");
+    navigate("/");
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiService } from "../lib/api";
+import { userService } from "../lib/userService";
 import InputField from "../components/InputField";
 import SelectField from "../components/SelectField";
 
@@ -37,7 +37,7 @@ export default function Register() {
     }
 
     try {
-      await apiService.register(
+      await userService.register(
         form.email,
         form.password,
         form.firstName,

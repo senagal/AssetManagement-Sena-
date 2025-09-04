@@ -1,13 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiService } from "../lib/api";
+import { authService } from "../lib/authService";
 import InputField from "../components/InputField";
 
 export default function Login() {
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -22,9 +19,17 @@ export default function Login() {
     setError("");
 
     try {
-      const data = await apiService.login(form.email, form.password);
+      const data = await authService.login(form.email, form.password);
       localStorage.setItem("token", data.token);
-      navigate("/user-dashboard");
+
+      const user = await authService.getProfile();
+      localStorage.setItem("user", JSON.stringify(user));
+
+      if (user.role === "Admin") {
+        navigate("/adminDashboard");
+      } else {
+        navigate("/userDashboard");
+      }
     } catch (err) {
       setError(err.response?.data?.message || err.message || "Login failed");
     } finally {
