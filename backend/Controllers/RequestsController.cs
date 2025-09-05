@@ -92,6 +92,49 @@ public class RequestsController : ControllerBase
 
         return Ok(requests);
     }
+[HttpGet("search")]
+[Authorize(Roles = "Admin")]
+public IActionResult SearchRequests(
+    [FromQuery] string? assetName,
+    [FromQuery] string? userName,
+    [FromQuery] string? status,
+    [FromQuery] string? reason)
+{
+    var query = _context.AssetRequests.AsQueryable();
+
+    if (!string.IsNullOrWhiteSpace(assetName))
+        query = query.Where(r => r.Asset.Name.ToLower().Contains(assetName.ToLower()));
+
+    if (!string.IsNullOrWhiteSpace(userName))
+        query = query.Where(r =>
+            (r.User.FirstName + " " + r.User.LastName).ToLower().Contains(userName.ToLower()));
+
+    if (!string.IsNullOrWhiteSpace(status))
+        query = query.Where(r => r.Status.ToLower() == status.ToLower());
+
+    if (!string.IsNullOrWhiteSpace(reason))
+        query = query.Where(r => r.Reason != null && r.Reason.ToLower().Contains(reason.ToLower()));
+
+    var results = query
+        .Select(r => new
+        {
+            r.Id,
+            r.AssetId,
+            AssetName = r.Asset.Name,
+            r.UserId,
+            UserName = r.User.FirstName + " " + r.User.LastName,
+            r.Status,
+            r.RequestedOn,
+            r.HandledOn,
+            r.Reason,
+            AdminName = r.HandledByAdmin != null
+                ? r.HandledByAdmin.FirstName + " " + r.HandledByAdmin.LastName
+                : null
+        })
+        .ToList();
+
+    return Ok(results);
+}
 
     [HttpPut("handle/{requestId}")]
     [Authorize(Roles = "Admin")]

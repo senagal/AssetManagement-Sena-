@@ -4,19 +4,33 @@ import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import ListCard from "../components/ListCard";
 import LoadingSpinner from "../components/LoadingSpinner";
+import SearchBar from "../components/SearchBar";
+import { useNavigate } from "react-router-dom";
 
 export default function RequestsPage() {
   const { user } = useAuth();
   const [requests, setRequests] = useState([]);
+  const [results, setResults] = useState([]);
+
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!user) {
+      navigate("/");
+      return;
+    }
     loadRequests();
-  }, []);
+  }, [user]);
 
   const loadRequests = async () => {
+    if (!user?.role) return;
+
     try {
-      const data = await requestService.getUserRequests();
+      const data =
+        user.role === "Admin"
+          ? await requestService.getAllRequests()
+          : await requestService.getUserRequests();
       setRequests(data);
     } catch (err) {
       console.error("Failed to fetch requests:", err);
@@ -24,19 +38,26 @@ export default function RequestsPage() {
       setLoading(false);
     }
   };
+  const displayedRequests = results.length > 0 ? results : requests;
 
+  if (!user) return null;
   if (loading) return <LoadingSpinner />;
 
   return (
     <div className="min-vh-100 bg-light">
       <Navbar user={user.firstName} />
       <main className="container py-4">
-        <h2 className="h5 mb-3">My Asset Requests</h2>
+        <div>
+          <SearchBar type="requests" role={user.role} onResults={setResults} />
+        </div>
+        <h2 className="h5 mb-3">
+          {user.role === "Admin" ? "All Asset Requests" : "My Asset Requests"}
+        </h2>
 
-        {requests.length === 0 ? (
+        {displayedRequests.length === 0 ? (
           <p className="text-muted">No requests yet.</p>
         ) : (
-          requests.map((request) => (
+          displayedRequests.map((request) => (
             <ListCard
               key={request.id}
               title={request.assetName}

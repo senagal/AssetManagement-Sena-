@@ -15,4 +15,9 @@ export const assetService = {
     const response = await api.get(`/Assets/${id}`);
     return response.data;
   },
+  searchAssets: async (filters) => {
+    const params = new URLSearchParams(filters).toString();
+    const response = await api.get(`/Assets/search?${params}`);
+    return response.data;
+  },
 };

@@ -23,4 +23,9 @@ export const requestService = {
     });
     return response.data;
   },
+  searchRequests: async (filters) => {
+    const params = new URLSearchParams(filters).toString();
+    const response = await api.get(`/Requests/search?${params}`);
+    return response.data;
+  },
 };

@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authService } from "../lib/authService";
+import { useAuth } from "../context/AuthContext";
 import InputField from "../components/InputField";
 
 export default function Login() {
+  const { login } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -19,17 +20,7 @@ export default function Login() {
     setError("");
 
     try {
-      const data = await authService.login(form.email, form.password);
-      localStorage.setItem("token", data.token);
-
-      const user = await authService.getProfile();
-      localStorage.setItem("user", JSON.stringify(user));
-
-      if (user.role === "Admin") {
-        navigate("/adminDashboard");
-      } else {
-        navigate("/userDashboard");
-      }
+      await login(form.email, form.password);
     } catch (err) {
       setError(err.response?.data?.message || err.message || "Login failed");
     } finally {

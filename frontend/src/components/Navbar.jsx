@@ -28,9 +28,12 @@ export default function Navbar() {
           >
             Requests
           </button>
-          <span className="text-muted small">
-            Welcome, {user?.firstName} {user?.lastName}
-          </span>
+          {user && (
+            <span className="text-muted small">
+              Welcome, {user.firstName} {user.lastName}
+            </span>
+          )}
+
           <button
             className="btn btn-outline-danger btn-sm"
             onClick={handleLogout}
