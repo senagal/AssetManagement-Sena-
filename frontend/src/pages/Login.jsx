@@ -22,7 +22,22 @@ export default function Login() {
     try {
       await login(form.email, form.password);
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "Login failed");
+      const status = err.status;
+      const message = err.message;
+
+      if (status === 404) {
+        setError("Invalid credentials. Please try again.");
+      } else if (status === 401) {
+        setError("Invalid credentials. Please try again.");
+      } else if (status === 400) {
+        setError("Email and password are required.");
+      } else {
+        setError(
+          typeof message === "string"
+            ? message
+            : "Login failed. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -38,7 +53,14 @@ export default function Login() {
           <p className="text-center text-muted mb-4">Sign in to your account</p>
 
           <form onSubmit={handleLogin}>
-            {error && <div className="alert alert-danger">{error}</div>}
+            {error && (
+              <p
+                className="text-danger text-center mb-3"
+                style={{ fontSize: "0.95rem" }}
+              >
+                {error}
+              </p>
+            )}
 
             <InputField
               label="Email"

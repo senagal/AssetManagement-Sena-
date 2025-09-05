@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
         navigate("/userDashboard");
       }
     } catch (err) {
-      alert(err.message);
+      throw err;
     }
   };
 
