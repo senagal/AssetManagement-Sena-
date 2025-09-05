@@ -55,16 +55,57 @@ namespace AssetManagement.Data
             {
                 var assets = new List<Asset>
                 {
-                    new Asset { Name = "HP 123", Category = "Laptop", SerialNumber = "SN001", PurchaseDate = DateTime.UtcNow, Status = "Available" },
-                    new Asset { Name = "Monitor", Category = "Monitor", SerialNumber = "SN002", PurchaseDate = DateTime.UtcNow, Status = "Available" },
-                    new Asset { Name = "Samsung S10", Category = "Phone", SerialNumber = "SN003", PurchaseDate = DateTime.UtcNow, Status = "Available" },
-                    new Asset { Name = "Asus", Category = "Laptop", SerialNumber = "SN004", PurchaseDate = DateTime.UtcNow, Status = "Available" },
-                    new Asset { Name = "Samsung A50", Category = "Phone", SerialNumber = "SN005", PurchaseDate = DateTime.UtcNow, Status = "Assigned" }
+                    new Asset 
+                    { 
+                        Name = "HP 123", 
+                        Category = "Laptop", 
+                        SerialNumber = "SN001", 
+                        PurchaseDate = DateTime.UtcNow, 
+                        Status = "Available",
+                        ImageUrl = "/images/hp123.jpeg"
+                    },
+                    new Asset 
+                    { 
+                        Name = "Monitor", 
+                        Category = "Monitor", 
+                        SerialNumber = "SN002", 
+                        PurchaseDate = DateTime.UtcNow, 
+                        Status = "Available",
+                        ImageUrl = "/images/monitor.jpeg"
+                    },
+                    new Asset 
+                    { 
+                        Name = "Iphone 15", 
+                        Category = "Phone", 
+                        SerialNumber = "SN003", 
+                        PurchaseDate = DateTime.UtcNow, 
+                        Status = "Available",
+                        ImageUrl = "/images/Iphone15.jpeg"
+                    },
+                    new Asset 
+                    { 
+                        Name = "Asus", 
+                        Category = "Laptop", 
+                        SerialNumber = "SN004", 
+                        PurchaseDate = DateTime.UtcNow, 
+                        Status = "Available",
+                        ImageUrl = "/images/hp123.jpeg"
+                    },
+                    new Asset 
+                    { 
+                        Name = "Samsung A50", 
+                        Category = "Phone", 
+                        SerialNumber = "SN005", 
+                        PurchaseDate = DateTime.UtcNow, 
+                        Status = "Assigned",
+                        ImageUrl = "/images/A50.jpeg"
+                    }
                 };
 
                 context.Assets.AddRange(assets);
                 context.SaveChanges();
             }
+
 
             if (!context.AssetRequests.Any())
             {

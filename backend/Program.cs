@@ -91,6 +91,8 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Asset Management API V1");
     });
 }
+app.UseStaticFiles();
+
 app.UseCors("AllowReactApp");
 app.UseAuthentication(); 
 app.UseAuthorization();

@@ -7,7 +7,7 @@ import ToastMessage from "../components/ToastMessage";
 import DeleteConfirmation from "../components/DeleteConfirmation";
 
 export default function ManageAssetForm({ asset, onClose, onUpdateSuccess }) {
-  const [formData, setFormData] = useState({ ...asset });
+  const [formData, setFormData] = useState({ ...asset, image: null });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -16,9 +16,12 @@ export default function ManageAssetForm({ asset, onClose, onUpdateSuccess }) {
 
   const isNew = !asset?.id;
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (e, isFile = false) => {
+    const { name, value, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: isFile ? files[0] : value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -35,14 +38,21 @@ export default function ManageAssetForm({ asset, onClose, onUpdateSuccess }) {
     setError("");
     setSuccess("");
 
-    const normalizedData = {
-      ...formData,
-      purchaseDate: formData.purchaseDate
-        ? new Date(formData.purchaseDate).toISOString()
-        : null,
-    };
+    let imageUrl = asset.imageUrl || "";
 
     try {
+      if (formData.image) {
+        imageUrl = await assetService.uploadImage(formData.image);
+      }
+
+      const normalizedData = {
+        ...formData,
+        imageUrl,
+        purchaseDate: formData.purchaseDate
+          ? new Date(formData.purchaseDate).toISOString()
+          : null,
+      };
+
       if (isNew) {
         await assetService.createAsset(normalizedData);
         setSuccess("Asset added successfully.");
@@ -116,6 +126,29 @@ export default function ManageAssetForm({ asset, onClose, onUpdateSuccess }) {
                 handleChange={handleChange}
                 validated={validated}
               />
+
+              <div className="mb-3">
+                <label htmlFor="image" className="form-label">
+                  Asset Image
+                </label>
+                <input
+                  type="file"
+                  id="image"
+                  name="image"
+                  className="form-control"
+                  accept="image/*"
+                  onChange={(e) => handleChange(e, true)}
+                />
+              </div>
+
+              {formData.image && (
+                <img
+                  src={URL.createObjectURL(formData.image)}
+                  alt="Preview"
+                  className="img-thumbnail mb-3"
+                  style={{ maxHeight: "150px" }}
+                />
+              )}
 
               <div className="d-flex gap-2">
                 <Button type="submit" disabled={loading}>

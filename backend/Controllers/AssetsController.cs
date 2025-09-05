@@ -29,11 +29,30 @@ namespace AssetManagement.Controllers
                     a.Category,
                     a.SerialNumber,
                     a.PurchaseDate,
-                    a.Status
+                    a.Status,
+                    a.ImageUrl 
                 })
+
                 .ToList();
 
             return Ok(assets);
+        }
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadAssetImage(IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+                return BadRequest("No image uploaded");
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+            var filePath = Path.Combine("wwwroot/images", fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+            var imageUrl = $"/images/{fileName}";
+            return Ok(new { imageUrl });
         }
 
         [HttpGet("available")]
@@ -49,8 +68,10 @@ namespace AssetManagement.Controllers
                     a.Category,
                     a.SerialNumber,
                     a.PurchaseDate,
-                    a.Status
+                    a.Status,
+                    a.ImageUrl 
                 })
+
                 .ToList();
 
             return Ok(availableAssets);
@@ -69,7 +90,8 @@ namespace AssetManagement.Controllers
                     a.Category,
                     a.SerialNumber,
                     a.PurchaseDate,
-                    a.Status
+                    a.Status,
+                    a.ImageUrl 
                 })
                 .FirstOrDefault();
 
@@ -93,8 +115,10 @@ namespace AssetManagement.Controllers
                 Category = request.Category,
                 SerialNumber = request.SerialNumber,
                 PurchaseDate = request.PurchaseDate,
-                Status = request.Status
+                Status = request.Status,
+                ImageUrl = request.ImageUrl 
             };
+
 
             _context.Assets.Add(asset);
             _context.SaveChanges();
@@ -106,7 +130,8 @@ namespace AssetManagement.Controllers
                 asset.Category,
                 asset.SerialNumber,
                 asset.PurchaseDate,
-                asset.Status
+                asset.Status,
+                asset.ImageUrl 
             };
 
             return CreatedAtAction(nameof(GetAsset), new { id = asset.Id }, result);
@@ -152,40 +177,45 @@ namespace AssetManagement.Controllers
                     a.Category,
                     a.SerialNumber,
                     a.PurchaseDate,
-                    a.Status
+                    a.Status,
+                    a.ImageUrl 
                 })
                 .ToList();
 
             return Ok(results);
         }
 
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult UpdateAsset(int id, [FromBody] UpdateAssetRequest request)
-        {
-            var asset = _context.Assets.Find(id);
-            if (asset == null) return NotFound("Asset not found");
+[HttpPut("{id}")]
+[Authorize(Roles = "Admin")]
+public IActionResult UpdateAsset(int id, [FromBody] UpdateAssetRequest request)
+{
+    var asset = _context.Assets.Find(id);
+    if (asset == null) return NotFound("Asset not found");
 
-            asset.Name = request.Name ?? asset.Name;
-            asset.Category = request.Category ?? asset.Category;
-            asset.SerialNumber = request.SerialNumber ?? asset.SerialNumber;
-            asset.PurchaseDate = request.PurchaseDate ?? asset.PurchaseDate;
-            asset.Status = request.Status ?? asset.Status;
+    asset.Name = request.Name ?? asset.Name;
+    asset.Category = request.Category ?? asset.Category;
+    asset.SerialNumber = request.SerialNumber ?? asset.SerialNumber;
+    asset.PurchaseDate = request.PurchaseDate ?? asset.PurchaseDate;
+    asset.Status = request.Status ?? asset.Status;
 
-            _context.SaveChanges();
+    asset.ImageUrl = request.ImageUrl ?? asset.ImageUrl; 
 
-            var result = new
-            {
-                asset.Id,
-                asset.Name,
-                asset.Category,
-                asset.SerialNumber,
-                asset.PurchaseDate,
-                asset.Status
-            };
+    _context.SaveChanges();
 
-            return Ok(result);
-        }
+    var result = new
+    {
+        asset.Id,
+        asset.Name,
+        asset.Category,
+        asset.SerialNumber,
+        asset.PurchaseDate,
+        asset.Status,
+        asset.ImageUrl
+    };
+
+    return Ok(result);
+}
+
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
@@ -208,6 +238,7 @@ namespace AssetManagement.Controllers
         public string SerialNumber { get; set; } = string.Empty;
         public DateTime PurchaseDate { get; set; }
         public string Status { get; set; } = "Available";
+        public string? ImageUrl { get; set; }
     }
 
     public class UpdateAssetRequest
@@ -217,5 +248,6 @@ namespace AssetManagement.Controllers
         public string? SerialNumber { get; set; }
         public DateTime? PurchaseDate { get; set; }
         public string? Status { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

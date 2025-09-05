@@ -4,6 +4,7 @@ export default function AssetList({ assets, actionRenderer }) {
   if (!assets || assets.length === 0) {
     return <p className="text-muted">No assets available.</p>;
   }
+  const backendBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   return assets.map((asset) => (
     <ListCard
@@ -11,6 +12,7 @@ export default function AssetList({ assets, actionRenderer }) {
       title={asset.name}
       subtitle={asset.category}
       status={asset.status}
+      imageUrl={`${backendBaseUrl}${asset.imageUrl}`}
       extraFields={[
         { label: "Serial", value: asset.serialNumber },
         {

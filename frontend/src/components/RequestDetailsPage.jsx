@@ -63,6 +63,26 @@ export default function RequestDetailsPage() {
         <div className="card mb-3 shadow-sm">
           <div className="card-body">
             <h5>{request.assetName}</h5>
+            {request.assetImageUrl && (
+              <img
+                src={`${process.env.REACT_APP_API_BASE_URL}${request.assetImageUrl}`}
+                alt={request.assetName}
+                className="img-fluid rounded mb-3"
+                style={{
+                  maxHeight: "200px",
+                  objectFit: "contain",
+                  display: "block",
+                  margin: "0 auto",
+                  border: "1px solid #dee2e6",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = `${process.env.REACT_APP_API_BASE_URL}/images/default-placeholder.jpeg`;
+                }}
+              />
+            )}
+
             <p>Category: {request.assetCategory}</p>
             <p>Serial Number: {request.assetSerialNumber}</p>
             <p>Status: {request.status}</p>

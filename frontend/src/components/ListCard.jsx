@@ -7,12 +7,13 @@ export default function ListCard({
   description,
   extraFields,
   actions,
+  imageUrl,
 }) {
   const getStatusClass = (status) => {
     switch (status?.toLowerCase()) {
       case "available":
         return "bg-success text-white";
-      case "Assigned":
+      case "assigned":
         return "bg-secondary text-white";
       case "requested":
         return "bg-warning text-dark";
@@ -27,6 +28,20 @@ export default function ListCard({
 
   return (
     <div className="card mb-3 shadow-sm">
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt={title}
+          className="card-img-top rounded mx-auto d-block mt-3"
+          style={{
+            maxHeight: "160px",
+            width: "auto",
+            maxWidth: "90%",
+            objectFit: "contain",
+          }}
+        />
+      )}
+
       <div className="card-body d-flex flex-column">
         <div className="d-flex justify-content-between align-items-start mb-2">
           <div>
@@ -37,7 +52,9 @@ export default function ListCard({
             <span className={`badge ${getStatusClass(status)}`}>{status}</span>
           )}
         </div>
+
         {description && <p className="card-text">{description}</p>}
+
         {extraFields?.map((f) => (
           <div
             className="d-flex justify-content-between text-muted mb-1"
@@ -47,6 +64,7 @@ export default function ListCard({
             <span className="fw-semibold">{f.value}</span>
           </div>
         ))}
+
         {actions && <div className="mt-auto">{actions}</div>}
       </div>
     </div>

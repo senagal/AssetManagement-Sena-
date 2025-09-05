@@ -11,6 +11,7 @@ namespace AssetManagement.Models
         public DateTime PurchaseDate { get; set; }
 
         public string Status { get; set; } = "Available";
+        public string? ImageUrl { get; set; }
         [JsonIgnore]
         public ICollection<AssetRequest>? Requests { get; set; }
     }

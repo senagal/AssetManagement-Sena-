@@ -103,6 +103,9 @@ public class RequestsController : ControllerBase
                 r.Id,
                 r.AssetId,
                 AssetName = r.Asset.Name,
+                AssetCategory = r.Asset.Category,
+                AssetSerialNumber = r.Asset.SerialNumber,
+                AssetImageUrl = r.Asset.ImageUrl, 
                 r.UserId,
                 UserName = r.User.FirstName + " " + r.User.LastName,
                 r.Status,
@@ -120,6 +123,7 @@ public class RequestsController : ControllerBase
 
         return Ok(request);
     }
+
 
     [HttpGet("search")]
     [Authorize]

@@ -5,6 +5,16 @@ export const assetService = {
     const response = await api.post("/Assets", newAssetData);
     return response.data;
   },
+  uploadImage: async (imageFile) => {
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    const response = await api.post("/assets/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return response.data.imageUrl;
+  },
 
   getAssets: async () => {
     const response = await api.get("/Assets");

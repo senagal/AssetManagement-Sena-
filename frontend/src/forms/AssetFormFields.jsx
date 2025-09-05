@@ -51,6 +51,7 @@ export default function AssetFormFields({ formData, handleChange, validated }) {
         />
         <div className="invalid-feedback">Serial number is required.</div>
       </div>
+
       <div className="mb-3">
         <label htmlFor="purchaseDate" className="form-label">
           Purchase Date
@@ -66,6 +67,7 @@ export default function AssetFormFields({ formData, handleChange, validated }) {
         />
         <div className="invalid-feedback">Purchase date is required.</div>
       </div>
+
       <div className="mb-3">
         <label htmlFor="status" className="form-label">
           Status

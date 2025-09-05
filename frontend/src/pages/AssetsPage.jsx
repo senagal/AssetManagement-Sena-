@@ -93,6 +93,7 @@ export default function AssetsPage() {
                 setFormMode(null);
               }}
               onUpdateSuccess={loadAssets}
+              uploadImage={assetService.uploadImage}
             />
           )
         ) : displayedAssets.length === 0 ? (

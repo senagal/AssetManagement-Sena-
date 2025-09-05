@@ -20,7 +20,8 @@ namespace backend.Migrations
                     Category = table.Column<string>(type: "text", nullable: false),
                     SerialNumber = table.Column<string>(type: "text", nullable: false),
                     PurchaseDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false)
+                    Status = table.Column<string>(type: "text", nullable: false),
+                    ImageUrl = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
