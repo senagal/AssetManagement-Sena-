@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { userService } from "../lib/userService";
-import InputField from "../components/InputField";
-import SelectField from "../components/SelectField";
+import { userService } from "../services/userService";
+import UserFormFields from "../forms/UserFormFields";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -14,8 +13,8 @@ export default function Register() {
     age: "",
     department: "",
     position: "",
-    role: "Employee",
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -30,7 +29,40 @@ export default function Register() {
     setLoading(true);
     setError("");
 
-    if (form.password !== form.confirmPassword) {
+    const trimmedForm = Object.fromEntries(
+      Object.entries(form).map(([key, val]) => [key, val.trim?.() ?? val])
+    );
+
+    for (const [key, value] of Object.entries(trimmedForm)) {
+      if (
+        value === "" ||
+        value === null ||
+        value === undefined ||
+        (key === "age" && Number(value) <= 18)
+      ) {
+        setError(`You must be older than 18 to register.`);
+        setLoading(false);
+        return;
+      }
+    }
+
+    const companyEmailRegex = /^[a-zA-Z0-9._%+-]+@company\.com$/;
+    if (!companyEmailRegex.test(trimmedForm.email)) {
+      setError("Email must be in the format abc@company.com");
+      setLoading(false);
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!passwordRegex.test(trimmedForm.password)) {
+      setError(
+        "Password must be at least 8 characters and include uppercase, lowercase, digit, and symbol"
+      );
+      setLoading(false);
+      return;
+    }
+
+    if (trimmedForm.password !== trimmedForm.confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
       return;
@@ -38,20 +70,25 @@ export default function Register() {
 
     try {
       await userService.register(
-        form.email,
-        form.password,
-        form.firstName,
-        form.lastName,
-        Number(form.age),
-        form.department,
-        form.position,
-        form.role
+        trimmedForm.email,
+        trimmedForm.password,
+        trimmedForm.firstName,
+        trimmedForm.lastName,
+        Number(trimmedForm.age),
+        trimmedForm.department,
+        trimmedForm.position,
+        "Employee"
       );
+
       setSuccess(true);
       setTimeout(() => navigate("/"), 2000);
     } catch (err) {
+      console.error("Registration error:", err.response?.data);
       setError(
-        err.response?.data?.message || err.message || "Registration failed"
+        err.response?.data?.message ||
+          JSON.stringify(err.response?.data) ||
+          err.message ||
+          "Registration failed"
       );
     } finally {
       setLoading(false);
@@ -66,8 +103,7 @@ export default function Register() {
           style={{ maxWidth: "400px", width: "100%" }}
         >
           <div className="card-body text-center">
-            <div className="text-success display-4 mb-3">✓</div>
-            <h3 className="mb-2">Registration Successful!</h3>
+            <h3 className="mb-2">You have been successfully registered!</h3>
             <p className="text-muted">Redirecting to login...</p>
           </div>
         </div>
@@ -97,84 +133,11 @@ export default function Register() {
           <form onSubmit={handleRegister}>
             {error && <div className="alert alert-danger">{error}</div>}
 
-            <InputField
-              label="Email"
-              id="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              required
-            />
-            <InputField
-              label="Password"
-              id="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              required
-            />
-            <InputField
-              label="Confirm Password"
-              id="confirmPassword"
-              type="password"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm your password"
-              required
-            />
-            <InputField
-              label="First Name"
-              id="firstName"
-              value={form.firstName}
-              onChange={handleChange}
-              placeholder="Enter your first name"
-              required
-            />
-            <InputField
-              label="Last Name"
-              id="lastName"
-              value={form.lastName}
-              onChange={handleChange}
-              placeholder="Enter your last name"
-              required
-            />
-            <InputField
-              label="Age"
-              id="age"
-              type="number"
-              value={form.age}
-              onChange={handleChange}
-              placeholder="Enter your age"
-              required
-            />
-            <InputField
-              label="Department"
-              id="department"
-              value={form.department}
-              onChange={handleChange}
-              placeholder="Enter your department"
-              required
-            />
-            <InputField
-              label="Position"
-              id="position"
-              value={form.position}
-              onChange={handleChange}
-              placeholder="Enter your position"
-              required
-            />
-
-            <SelectField
-              label="Role"
-              id="role"
-              value={form.role}
-              onChange={handleChange}
-              options={[
-                { label: "Employee", value: "Employee" },
-                { label: "Admin", value: "Admin" },
-              ]}
+            <UserFormFields
+              form={form}
+              setForm={setForm}
+              fixedRole="Employee"
+              mode="register"
             />
 
             <button

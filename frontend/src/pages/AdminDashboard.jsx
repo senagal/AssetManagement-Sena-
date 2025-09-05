@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import StatsCard from "../components/StatsCard";
-import { requestService } from "../lib/requestService";
-import { assetService } from "../lib/assetService";
+import { requestService } from "../services/requestService";
+import { assetService } from "../services/assetService";
 
 export default function AdminDashboard() {
   const [assets, setAssets] = useState([]);
@@ -29,9 +29,7 @@ export default function AdminDashboard() {
   };
 
   const availableAssets = assets.filter((a) => a.status === "Available").length;
-  const unavailableAssets = assets.filter(
-    (a) => a.status === "Unavailable"
-  ).length;
+  const AssignedAssets = assets.filter((a) => a.status === "Assigned").length;
 
   if (loading) {
     return (
@@ -57,8 +55,8 @@ export default function AdminDashboard() {
           </div>
           <div className="col-md-4">
             <StatsCard
-              title="Unavailable Assets"
-              value={unavailableAssets}
+              title="Assigned Assets"
+              value={AssignedAssets}
               bg="danger"
             />
           </div>

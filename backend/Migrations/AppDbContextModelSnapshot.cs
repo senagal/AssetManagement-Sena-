@@ -51,6 +51,9 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SerialNumber")
+                        .IsUnique();
+
                     b.ToTable("Assets");
                 });
 

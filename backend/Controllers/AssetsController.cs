@@ -84,6 +84,9 @@ namespace AssetManagement.Controllers
         {
             if (request == null) return BadRequest("Invalid asset data");
 
+            bool exists = _context.Assets.Any(a => a.SerialNumber == request.SerialNumber);
+            if (exists) return Conflict("An asset with this serial number already exists.");
+
             var asset = new Asset
             {
                 Name = request.Name,
@@ -108,53 +111,53 @@ namespace AssetManagement.Controllers
 
             return CreatedAtAction(nameof(GetAsset), new { id = asset.Id }, result);
         }
-[HttpGet("search")]
-[Authorize]
-public IActionResult SearchAssets(
-    [FromQuery] string? name,
-    [FromQuery] string? serialNumber,
-    [FromQuery] string? availability,
-    [FromQuery] string? category,
-    [FromQuery] string? status)
-{
-    var query = _context.Assets.AsQueryable();
 
-    if (!string.IsNullOrWhiteSpace(name))
-        query = query.Where(a => a.Name.ToLower().Contains(name.ToLower()));
-
-    if (!string.IsNullOrWhiteSpace(serialNumber))
-        query = query.Where(a => a.SerialNumber.ToLower().Contains(serialNumber.ToLower()));
-
-    if (!string.IsNullOrWhiteSpace(availability))
-    {
-        var avail = availability.ToLower();
-        if (avail == "available")
-            query = query.Where(a => a.Status.ToLower() == "available");
-        else if (avail == "unavailable")
-            query = query.Where(a => a.Status.ToLower() != "available");
-    }
-
-    if (!string.IsNullOrWhiteSpace(category))
-        query = query.Where(a => a.Category.ToLower().Contains(category.ToLower()));
-
-    if (!string.IsNullOrWhiteSpace(status))
-        query = query.Where(a => a.Status.ToLower() == status.ToLower());
-
-    var results = query
-        .Select(a => new
+        [HttpGet("search")]
+        [Authorize]
+        public IActionResult SearchAssets(
+            [FromQuery] string? name,
+            [FromQuery] string? serialNumber,
+            [FromQuery] string? availability,
+            [FromQuery] string? category,
+            [FromQuery] string? status)
         {
-            a.Id,
-            a.Name,
-            a.Category,
-            a.SerialNumber,
-            a.PurchaseDate,
-            a.Status
-        })
-        .ToList();
+            var query = _context.Assets.AsQueryable();
 
-    return Ok(results);
-}
+            if (!string.IsNullOrWhiteSpace(name))
+                query = query.Where(a => a.Name.ToLower().Contains(name.ToLower()));
 
+            if (!string.IsNullOrWhiteSpace(serialNumber))
+                query = query.Where(a => a.SerialNumber.ToLower().Contains(serialNumber.ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(availability))
+            {
+                var avail = availability.ToLower();
+                if (avail == "available")
+                    query = query.Where(a => a.Status.ToLower() == "available");
+                else if (avail == "Assigned")
+                    query = query.Where(a => a.Status.ToLower() != "available");
+            }
+
+            if (!string.IsNullOrWhiteSpace(category))
+                query = query.Where(a => a.Category.ToLower().Contains(category.ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(status))
+                query = query.Where(a => a.Status.ToLower() == status.ToLower());
+
+            var results = query
+                .Select(a => new
+                {
+                    a.Id,
+                    a.Name,
+                    a.Category,
+                    a.SerialNumber,
+                    a.PurchaseDate,
+                    a.Status
+                })
+                .ToList();
+
+            return Ok(results);
+        }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]

@@ -1,11 +1,6 @@
 import { api } from "./api";
 
 export const userService = {
-  getProfile: async () => {
-    const response = await api.get("/Auth/me");
-    return response.data;
-  },
-
   register: async (
     email,
     password,
@@ -27,5 +22,19 @@ export const userService = {
       role,
     });
     return response.data;
+  },
+  updateProfile: async (data) => {
+    const res = await api.put("/Users/me", data);
+    return res.data;
+  },
+
+  deleteAccount: async () => {
+    const res = await api.delete("/Users/me");
+    return res.data;
+  },
+
+  getAllUsers: async () => {
+    const res = await api.get("/Users");
+    return res.data;
   },
 };

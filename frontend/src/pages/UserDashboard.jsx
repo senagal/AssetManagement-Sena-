@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import StatsCard from "../components/StatsCard";
-import { requestService } from "../lib/requestService";
-import { assetService } from "../lib/assetService";
+import { requestService } from "../services/requestService";
+import { assetService } from "../services/assetService";
 
 export default function UserDashboard() {
   const [assets, setAssets] = useState([]);

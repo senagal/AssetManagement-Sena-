@@ -20,6 +20,7 @@ namespace AssetManagement.Controllers
 
         [HttpPost]
         public IActionResult Register([FromBody] RegisterUserRequest request)
+        
         {
             if (_context.Users.Any(u => u.Email == request.Email))
                 return BadRequest("Email already exists");
@@ -100,6 +101,19 @@ namespace AssetManagement.Controllers
                 user.Position,
                 user.Role
             });
+        }
+        [HttpDelete("me")]
+        [Authorize]
+        public IActionResult DeleteAccount()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            var user = _context.Users.Find(userId);
+            if (user == null) return NotFound("User not found");
+
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+
+            return Ok("Account deleted");
         }
 
         [HttpGet]

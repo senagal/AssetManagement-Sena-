@@ -1,9 +1,9 @@
 export default function StatsCard({ title, value, bg = "primary" }) {
   return (
-    <div className={`card text-white bg-${bg} mb-3`}>
-      <div className="card-body text-center">
+    <div className={`card text-white bg-${bg} shadow-sm`}>
+      <div className="card-body">
         <h5 className="card-title">{title}</h5>
-        <h2 className="mb-0">{value}</h2>
+        <p className="display-6 fw-bold mb-0">{value}</p>
       </div>
     </div>
   );

@@ -1,14 +1,14 @@
 export default function Button({
   children,
-  type = "button",
-  onClick,
+  variant = "primary",
   className = "",
+  ...props
 }) {
   return (
     <button
-      type={type}
-      onClick={onClick}
-      className={`w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition ${className}`}
+      type="button"
+      className={`btn btn-${variant} w-100 ${className}`}
+      {...props}
     >
       {children}
     </button>

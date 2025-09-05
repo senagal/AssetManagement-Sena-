@@ -26,6 +26,10 @@ namespace AssetManagement.Data
                 .HasOne(ar => ar.Asset)
                 .WithMany(a => a.Requests)
                 .HasForeignKey(ar => ar.AssetId);
+
+            modelBuilder.Entity<Asset>()
+                .HasIndex(a => a.SerialNumber)
+                .IsUnique();
         }
     }
 }

@@ -5,7 +5,10 @@ export const requestService = {
     const response = await api.post("/Requests", { assetId, reason });
     return response.data;
   },
-
+  getRequestById: async (id) => {
+    const response = await api.get(`/Requests/${id}`);
+    return response.data;
+  },
   getUserRequests: async () => {
     const response = await api.get("/Requests/user");
     return response.data;

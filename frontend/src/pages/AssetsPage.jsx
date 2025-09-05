@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { assetService } from "../lib/assetService";
+import { assetService } from "../services/assetService";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
-import ListCard from "../components/ListCard";
+import AssetList from "../components/AssetList";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Button from "../components/Button";
 import RequestForm from "../forms/RequestForm";
@@ -15,7 +15,7 @@ export default function AssetsPage() {
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedAsset, setSelectedAsset] = useState(null);
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState(null);
   const [formMode, setFormMode] = useState(null);
   const navigate = useNavigate();
 
@@ -36,7 +36,7 @@ export default function AssetsPage() {
           ? await assetService.getAssets()
           : await assetService.getAvailableAssets();
       setAssets(data);
-      setResults([]);
+      setResults(null);
     } catch (err) {
       console.error("Failed to fetch assets:", err);
     } finally {
@@ -44,7 +44,7 @@ export default function AssetsPage() {
     }
   };
 
-  const displayedAssets = results.length > 0 ? results : assets;
+  const displayedAssets = results !== null ? results : assets;
 
   if (!user) return null;
   if (loading) return <LoadingSpinner />;
@@ -55,6 +55,23 @@ export default function AssetsPage() {
       <main className="container py-4">
         <div>
           <SearchBar type="assets" role={user.role} onResults={setResults} />
+          {user.role === "Admin" && !selectedAsset && (
+            <div className="mb-3 d-flex justify-content-end">
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setSelectedAsset({
+                    name: "",
+                    category: "",
+                    status: "Available",
+                  });
+                  setFormMode("manage");
+                }}
+              >
+                + Add Asset
+              </Button>
+            </div>
+          )}
         </div>
         <h2 className="h5 mb-3">Available Assets</h2>
 
@@ -62,11 +79,11 @@ export default function AssetsPage() {
           formMode === "request" ? (
             <RequestForm
               asset={selectedAsset}
-              onClose={() => {
+              onRequestSubmitted={() => {
                 setSelectedAsset(null);
                 setFormMode(null);
+                loadAssets();
               }}
-              onRequestSuccess={loadAssets}
             />
           ) : (
             <ManageAssetForm
@@ -79,45 +96,35 @@ export default function AssetsPage() {
             />
           )
         ) : displayedAssets.length === 0 ? (
-          <p className="text-muted">No assets available.</p>
+          <p className="text-muted">
+            {results !== null ? "No results found." : "No assets available."}
+          </p>
         ) : (
-          displayedAssets.map((asset) => (
-            <ListCard
-              key={asset.id}
-              title={asset.name}
-              subtitle={asset.category}
-              status={asset.status}
-              extraFields={[
-                { label: "Serial", value: asset.serialNumber },
-                {
-                  label: "Purchase Date",
-                  value: new Date(asset.purchaseDate).toLocaleDateString(),
-                },
-              ]}
-              actions={
-                user.role === "Employee" ? (
-                  <Button
-                    onClick={() => {
-                      setSelectedAsset(asset);
-                      setFormMode("request");
-                    }}
-                  >
-                    Request Asset
-                  </Button>
-                ) : (
-                  <Button
-                    variant="info"
-                    onClick={() => {
-                      setSelectedAsset(asset);
-                      setFormMode("manage");
-                    }}
-                  >
-                    Manage
-                  </Button>
-                )
-              }
-            />
-          ))
+          <AssetList
+            assets={displayedAssets}
+            actionRenderer={(asset) =>
+              user.role === "Employee" ? (
+                <Button
+                  onClick={() => {
+                    setSelectedAsset(asset);
+                    setFormMode("request");
+                  }}
+                >
+                  Request Asset
+                </Button>
+              ) : (
+                <Button
+                  variant="info"
+                  onClick={() => {
+                    setSelectedAsset(asset);
+                    setFormMode("manage");
+                  }}
+                >
+                  Manage
+                </Button>
+              )
+            }
+          />
         )}
       </main>
     </div>

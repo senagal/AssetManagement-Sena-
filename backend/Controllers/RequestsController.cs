@@ -92,49 +92,78 @@ public class RequestsController : ControllerBase
 
         return Ok(requests);
     }
-[HttpGet("search")]
-[Authorize(Roles = "Admin")]
-public IActionResult SearchRequests(
-    [FromQuery] string? assetName,
-    [FromQuery] string? userName,
-    [FromQuery] string? status,
-    [FromQuery] string? reason)
-{
-    var query = _context.AssetRequests.AsQueryable();
+    [HttpGet("{id}")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult GetRequestById(int id)
+    {
+        var request = _context.AssetRequests
+            .Where(r => r.Id == id)
+            .Select(r => new
+            {
+                r.Id,
+                r.AssetId,
+                AssetName = r.Asset.Name,
+                r.UserId,
+                UserName = r.User.FirstName + " " + r.User.LastName,
+                r.Status,
+                r.RequestedOn,
+                r.HandledOn,
+                r.Reason,
+                AdminName = r.HandledByAdmin != null
+                    ? r.HandledByAdmin.FirstName + " " + r.HandledByAdmin.LastName
+                    : null
+            })
+            .FirstOrDefault();
 
-    if (!string.IsNullOrWhiteSpace(assetName))
-        query = query.Where(r => r.Asset.Name.ToLower().Contains(assetName.ToLower()));
+        if (request == null)
+            return NotFound("Request not found");
 
-    if (!string.IsNullOrWhiteSpace(userName))
-        query = query.Where(r =>
-            (r.User.FirstName + " " + r.User.LastName).ToLower().Contains(userName.ToLower()));
+        return Ok(request);
+    }
 
-    if (!string.IsNullOrWhiteSpace(status))
-        query = query.Where(r => r.Status.ToLower() == status.ToLower());
+    [HttpGet("search")]
+    [Authorize]
+    public IActionResult SearchRequests(
+        [FromQuery] string? assetName,
+        [FromQuery] string? userName,
+        [FromQuery] string? status,
+        [FromQuery] string? reason)
+    {
+        var query = _context.AssetRequests.AsQueryable();
 
-    if (!string.IsNullOrWhiteSpace(reason))
-        query = query.Where(r => r.Reason != null && r.Reason.ToLower().Contains(reason.ToLower()));
+        if (!string.IsNullOrWhiteSpace(assetName))
+            query = query.Where(r => r.Asset.Name.ToLower().Contains(assetName.ToLower()));
 
-    var results = query
-        .Select(r => new
-        {
-            r.Id,
-            r.AssetId,
-            AssetName = r.Asset.Name,
-            r.UserId,
-            UserName = r.User.FirstName + " " + r.User.LastName,
-            r.Status,
-            r.RequestedOn,
-            r.HandledOn,
-            r.Reason,
-            AdminName = r.HandledByAdmin != null
-                ? r.HandledByAdmin.FirstName + " " + r.HandledByAdmin.LastName
-                : null
-        })
-        .ToList();
+        if (!string.IsNullOrWhiteSpace(userName))
+            query = query.Where(r =>
+                (r.User.FirstName + " " + r.User.LastName).ToLower().Contains(userName.ToLower()));
 
-    return Ok(results);
-}
+        if (!string.IsNullOrWhiteSpace(status))
+            query = query.Where(r => r.Status.ToLower() == status.ToLower());
+
+        if (!string.IsNullOrWhiteSpace(reason))
+            query = query.Where(r => r.Reason != null && r.Reason.ToLower().Contains(reason.ToLower()));
+
+        var results = query
+            .Select(r => new
+            {
+                r.Id,
+                r.AssetId,
+                AssetName = r.Asset.Name,
+                r.UserId,
+                UserName = r.User.FirstName + " " + r.User.LastName,
+                r.Status,
+                r.RequestedOn,
+                r.HandledOn,
+                r.Reason,
+                AdminName = r.HandledByAdmin != null
+                    ? r.HandledByAdmin.FirstName + " " + r.HandledByAdmin.LastName
+                    : null
+            })
+            .ToList();
+
+        return Ok(results);
+    }
 
     [HttpPut("handle/{requestId}")]
     [Authorize(Roles = "Admin")]
@@ -153,7 +182,7 @@ public IActionResult SearchRequests(
             var asset = _context.Assets.Find(request.AssetId);
             if (asset != null)
             {
-                asset.Status = "Unavailable";
+                asset.Status = "Assigned";
             }
         }
 

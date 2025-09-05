@@ -59,7 +59,7 @@ namespace AssetManagement.Data
                     new Asset { Name = "Monitor", Category = "Monitor", SerialNumber = "SN002", PurchaseDate = DateTime.UtcNow, Status = "Available" },
                     new Asset { Name = "Samsung S10", Category = "Phone", SerialNumber = "SN003", PurchaseDate = DateTime.UtcNow, Status = "Available" },
                     new Asset { Name = "Asus", Category = "Laptop", SerialNumber = "SN004", PurchaseDate = DateTime.UtcNow, Status = "Available" },
-                    new Asset { Name = "Samsung A50", Category = "Phone", SerialNumber = "SN005", PurchaseDate = DateTime.UtcNow, Status = "Available" }
+                    new Asset { Name = "Samsung A50", Category = "Phone", SerialNumber = "SN005", PurchaseDate = DateTime.UtcNow, Status = "Assigned" }
                 };
 
                 context.Assets.AddRange(assets);
