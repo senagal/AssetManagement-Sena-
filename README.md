@@ -8,8 +8,6 @@ Tech stack used
 - React for frontend
 - Postgresql for database
 
----
-
 ## Features
 
 - Role-based access (Admin & Employee)
@@ -18,8 +16,6 @@ Tech stack used
 - Request asset with approval/rejection
 - Search and filter assets or requests
 - Responsive UI with Bootstrap
-
----
 
 ## Setup Instructions
 
@@ -55,6 +51,7 @@ REACT_APP_API_URL=the base url the backend is being served from
 REACT_APP_API_BASE_URL=the backend url without the api part for serving the images from wwwroot
 ```
 
-##Demo seeded data
+## Demo seeded data
+
 -for Admin email -'admin@company.com' and password - 'Admin@123'
 -for employee email -'employee@company.com' and password - 'Employee@123'
